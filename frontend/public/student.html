@@ -1,184 +1,103 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0066CC">
-    <meta name="description" content="UIDE-Link - Sistema de telemetría de buses UIDE">
-    
-    <title>UIDE-Link | Estudiante</title>
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
-    
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
-    
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="/css/styles.css">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- html5-qrcode library -->
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+
+<!-- Stylesheets -->
+<link rel="stylesheet" href="/css/styles.css">
+<link rel="stylesheet" href="/css/scanner-ui.css">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+<!-- html5-qrcode library -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
-<body>
-    <!-- Status Bar -->
-    <div class="status-bar">
-        <div id="connectionStatus" class="status-indicator">
-            <span class="status-dot"></span> Verificando...
-        </div>
-        <div id="pendingCount" class="pending-count">
-            Cargando...
-        </div>
-    </div>
 
-    <!-- Main Container -->
-    <div class="container-sm" style="margin-top: 80px;">
-        
-        <!-- Login View -->
-        <div id="loginView" class="page">
-            <div class="card fade-in">
-                <div class="card-header text-center">
-                    <h1 style="color: var(--color-primary); margin-bottom: var(--space-xs);">🚌 UIDE-Link</h1>
-                    <p class="text-muted">Sistema de Telemetría de Buses</p>
+<body style="padding-top: 120px;">
+
+    <!-- Gamification Header -->
+    <div class="gamification-header">
+        <div class="gamification-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="totalPoints">0</div>
+                <div class="stat-label">Points</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="currentStreak">0</div>
+                <div class="stat-label">🔥 Streak</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalCO2">0g</div>
+                <div class="stat-label">CO₂ Saved</div>
+            </div>
+            <!-- Scanner Container -->
+            <div id="scannerContainer" class="hidden">
+                <div class="scanner-container">
+                    <div id="qr-reader"></div>
                 </div>
-                
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label class="form-label" for="email">Correo Institucional</label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            class="form-input" 
-                            placeholder="tu.correo@uide.edu.ec"
-                            required
-                            autocomplete="email"
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="password">Contraseña</label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            class="form-input" 
-                            placeholder="••••••••"
-                            required
-                            autocomplete="current-password"
-                        >
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-large btn-full">
-                        Iniciar Sesión
+
+                <div class="text-center mt-3">
+                    <button id="stopScanBtn" class="btn btn-secondary">
+                        Detener Escáner
                     </button>
-                    
-                    <p class="text-center text-muted mt-3" style="font-size: 0.875rem;">
-                        Funciona sin conexión a internet
-                    </p>
-                </form>
-                
-                <div id="loginError" class="hidden" style="margin-top: var(--space-md); padding: var(--space-sm); background: rgba(245, 101, 101, 0.1); border-radius: var(--radius-md); color: var(--color-error);">
                 </div>
             </div>
-            
-            <div class="card fade-in" style="animation-delay: 0.1s;">
-                <h3 style="margin-bottom: var(--space-sm);">Cuentas de Prueba</h3>
-                <p class="text-muted" style="font-size: 0.875rem;">Usuario: <strong>maria.garcia@uide.edu.ec</strong></p>
-                <p class="text-muted" style="font-size: 0.875rem;">Contraseña: <strong>uide2024</strong></p>
+
+            <!-- Scan Button -->
+            <div id="scanButtonContainer">
+                <button id="startScanBtn" class="scan-button-instant">
+                    📷 Escanear Código QR
+                </button>
             </div>
         </div>
 
-        <!-- Main App View -->
-        <div id="appView" class="page hidden">
-            
-            <!-- Welcome Card -->
-            <div class="card fade-in">
-                <h2 id="welcomeMessage">Bienvenido/a</h2>
-                <p class="text-muted">Escanea el código QR del bus</p>
+        <!-- Destination Selector (shown after scan) -->
+        <div id="destinationCard" class="card scanner-card-futuristic hidden" style="margin-top: 1.5rem;">
+            <div class="card-header">
+                <h3 class="card-title">¿A dónde vas? (Opcional)</h3>
+                <p class="text-muted" style="font-size: 0.875rem;">
+                    Toca tu parada o espera 5 segundos
+                </p>
             </div>
 
-            <!-- Scanner Card -->
-            <div id="scannerCard" class="card fade-in" style="animation-delay: 0.1s;">
-                <div class="card-header">
-                    <h3 class="card-title">Escáner QR</h3>
-                </div>
-                
-                <div id="scannerContainer" class="hidden">
-                    <div class="scanner-container">
-                        <div id="qr-reader"></div>
-                    </div>
-                    
-                    <div class="text-center mt-3">
-                        <button id="stopScanBtn" class="btn btn-secondary">
-                            Detener Escáner
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="scanButtonContainer">
-                    <button id="startScanBtn" class="btn btn-primary btn-large btn-full">
-                        📷 Escanear Código QR
-                    </button>
-                </div>
+            <div id="stopsList" class="stops-list">
+                <!-- Stops will be dynamically loaded -->
             </div>
 
-            <!-- Scan Type Selection (shown after QR scan) -->
-            <div id="scanTypeCard" class="card hidden">
-                <div class="card-header">
-                    <h3 class="card-title">Tipo de Escaneo</h3>
-                    <p class="text-muted" id="busInfo">Bus identificado</p>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
-                    <button id="ingressBtn" class="btn btn-success btn-large">
-                        ➡️ Ingreso
-                    </button>
-                    <button id="egressBtn" class="btn btn-danger btn-large">
-                        ⬅️ Salida
-                    </button>
-                </div>
-                
-                <button id="cancelScanBtn" class="btn btn-outline btn-full mt-2">
-                    Cancelar
-                </button>
+            <button id="skipDestinationBtn" class="btn btn-outline btn-full mt-2">
+                Omitir
+            </button>
+        </div>
+
+        <!-- Recent Scans -->
+        <div class="card scanner-card-futuristic fade-in" style="animation-delay: 0.2s; margin-top: 1.5rem;">
+            <div class="card-header">
+                <h3 class="card-title">Viajes Recientes</h3>
             </div>
 
-            <!-- Scan History -->
-            <div class="card fade-in" style="animation-delay: 0.2s;">
-                <div class="card-header">
-                    <h3 class="card-title">Historial de Hoy</h3>
-                </div>
-                
-                <ul id="scanHistory" class="scan-list">
-                    <li class="text-center text-muted" style="padding: var(--space-lg);">
-                        No hay escaneos recientes
-                    </li>
-                </ul>
-            </div>
+            <ul id="scanHistory" class="scan-list">
+                <li class="text-center text-muted" style="padding: var(--space-lg);">
+                    No hay viajes recientes
+                </li>
+            </ul>
+        </div>
 
-            <!-- Sync Controls -->
-            <div class="card fade-in" style="animation-delay: 0.3s;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm);">
-                    <span class="text-muted">Estado:</span>
-                    <span id="syncStatus" class="text-success">Sincronizado ✓</span>
-                </div>
-                
-                <button id="manualSyncBtn" class="btn btn-outline btn-full">
-                    🔄 Sincronizar Ahora
-                </button>
+        <!-- Achievement Progress (if any) -->
+        <div class="achievement-progress fade-in" style="animation-delay: 0.3s; margin-top: 1.5rem;">
+            <div class="progress-label" id="progressLabel">
+                Escanea para comenzar a ganar puntos
             </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="achievementProgress" style="width: 0%"></div>
+            </div>
+        </div>
 
-            <!-- Logout -->
-            <div class="text-center mt-4">
-                <button id="logoutBtn" class="btn btn-outline">
-                    Cerrar Sesión
-                </button>
-            </div>
+        <!-- Optional: Profile Link -->
+        <div class="text-center" style="margin-top: 2rem; margin-bottom: 2rem;">
+            <button id="profileBtn" class="btn btn-outline" style="font-size: 0.875rem;">
+                ⚙️ Personalizar Perfil
+            </button>
         </div>
 
     </div>
@@ -194,7 +113,7 @@
     <!-- Config -->
     <script>
         window.CONFIG = {
-            API_URL: 'http://localhost:3000'
+            API_URL: 'http://localhost:8000' // Update for production
         };
     </script>
 
@@ -202,31 +121,28 @@
     <script src="/js/db.js"></script>
     <script src="/js/sync.js"></script>
     <script src="/js/scanner.js"></script>
-    
+    <script src="/js/gamification.js"></script>
+
     <!-- Main App Script -->
     <script>
         // =====================================
-        // STUDENT APP - MAIN LOGIC
+        // UIDE-LINK V2 - FRICTIONLESS APP
         // =====================================
 
-        let currentUser = null;
+        let sessionToken = null;
         let qrScanner = null;
-        let scannedBusData = null;
+        let scannedData = null;
+        let destinationTimer = null;
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 UIDE-Link Student App starting...');
+            console.log('🚀 UIDE-Link V2 Frictionless App starting...');
 
             // Register Service Worker
             if ('serviceWorker' in navigator) {
                 try {
                     const registration = await navigator.serviceWorker.register('/sw.js');
-                    console.log('✓ Service Worker registered:', registration.scope);
-
-                    // Register Background Sync if supported
-                    if ('sync' in registration) {
-                        console.log('✓ Background Sync supported');
-                    }
+                    console.log('✓ Service Worker registered');
                 } catch (error) {
                     console.error('Service Worker registration failed:', error);
                 }
@@ -235,112 +151,29 @@
             // Initialize IndexedDB
             await window.DB.init();
 
-            // Initialize Sync Manager
-            await window.SyncManager.init();
+            // Load session token (persistent session)
+            const userData = await window.DB.getUserData();
+            if (userData && userData.session_token) {
+                sessionToken = userData.session_token;
+                console.log('✓ Session restored');
 
-            // Check if user is logged in
-            await checkAuth();
+                // Load student summary
+                loadStudentSummary();
+            }
 
             // Set up event listeners
             setupEventListeners();
+
+            // Load recent scans
+            loadScanHistory();
         });
-
-        // Check authentication
-        async function checkAuth() {
-            const userData = await window.DB.getUserData();
-
-            if (userData && userData.token) {
-                // Check if token is still valid (within 24 hours)
-                const cachedTime = new Date(userData.cachedAt);
-                const now = new Date();
-                const hoursDiff = (now - cachedTime) / (1000 * 60 * 60);
-
-                if (hoursDiff < 24) {
-                    currentUser = userData;
-                    showApp();
-                    loadScanHistory();
-                    return;
-                }
-            }
-
-            showLogin();
-        }
-
-        // Show login view
-        function showLogin() {
-            document.getElementById('loginView').classList.remove('hidden');
-            document.getElementById('appView').classList.add('hidden');
-        }
-
-        // Show app view
-        function showApp() {
-            document.getElementById('loginView').classList.add('hidden');
-            document.getElementById('appView').classList.remove('hidden');
-
-            if (currentUser && currentUser.user) {
-                const name = `${currentUser.user.first_name} ${currentUser.user.last_name}`;
-                document.getElementById('welcomeMessage').textContent = `Hola, ${name}! 👋`;
-            }
-        }
 
         // Setup event listeners
         function setupEventListeners() {
-            // Login form
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-
-            // QR Scanner
             document.getElementById('startScanBtn').addEventListener('click', startQRScanner);
             document.getElementById('stopScanBtn').addEventListener('click', stopQRScanner);
-
-            // Scan type buttons
-            document.getElementById('ingressBtn').addEventListener('click', () => recordScan('ingress'));
-            document.getElementById('egressBtn').addEventListener('click', () => recordScan('egress'));
-            document.getElementById('cancelScanBtn').addEventListener('click', cancelScan);
-
-            // Sync button
-            document.getElementById('manualSyncBtn').addEventListener('click', () => window.SyncManager.manualSync());
-
-            // Logout button
-            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-        }
-
-        // Handle login
-        async function handleLogin(e) {
-            e.preventDefault();
-
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorEl = document.getElementById('loginError');
-
-            errorEl.classList.add('hidden');
-            showLoading('Iniciando sesión...');
-
-            try {
-                const response = await fetch(`${window.CONFIG.API_URL}/api/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, userType: 'student' })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Error de autenticación');
-                }
-
-                // Save user data
-                await window.DB.setUserData(data);
-                currentUser = data;
-
-                hideLoading();
-                showApp();
-                loadScanHistory();
-
-            } catch (error) {
-                hideLoading();
-                errorEl.textContent = error.message;
-                errorEl.classList.remove('hidden');
-            }
+            document.getElementById('skipDestinationBtn').addEventListener('click', skipDestination);
+            document.getElementById('profileBtn').addEventListener('click', showProfileModal);
         }
 
         // Start QR scanner
@@ -372,116 +205,133 @@
             document.getElementById('scannerContainer').classList.add('hidden');
         }
 
-        // Handle QR scan
-        function handleQRScan(busData) {
-            console.log('Bus scanned:', busData);
-
-            scannedBusData = busData;
+        // Handle QR scan - THE INSTANT EXPERIENCE
+        async function handleQRScan(qrData) {
+            console.log('QR scanned:', qrData);
+            scannedData = qrData;
 
             // Stop scanner
-            stopQRScanner();
+            await stopQRScanner();
 
-            // Show scan type selection
-            document.getElementById('busInfo').textContent = `Bus: ${busData.busNumber}`;
-            document.getElementById('scanTypeCard').classList.remove('hidden');
+            // Send to backend IMMEDIATELY
+            await processScan(qrData, null);
         }
 
-        // Record scan
-        async function recordScan(eventType) {
-            if (!scannedBusData) return;
+        // Process scan with backend
+        async function processScan(qrData, destinationStopId = null) {
+            showLoading('Procesando...');
 
-            showLoading(`Registrando ${eventType === 'ingress' ? 'ingreso' : 'salida'}...`);
-
-            const scanData = {
-                clientId: window.DB.generateUUID(),
-                busId: scannedBusData.busId,
-                eventType: eventType,
-                localTimestamp: new Date().toISOString(),
-                latitude: null,
-                longitude: null,
-                deviceInfo: {
-                    userAgent: navigator.userAgent,
-                    platform: navigator.platform
-                }
+            const scanRequest = {
+                static_qr_id: qrData.staticQrId,
+                scan_type: 'ENTRY',
+                client_event_id: window.DB.generateUUID(),
+                client_timestamp: qrData.scanTime,
+                destination_stop_id: destinationStopId,
+                session_token: sessionToken
             };
 
             try {
-                // Save to IndexedDB
-                await window.DB.addScan(scanData);
-
-                // Add to history display
-                await window.DB.addToHistory({
-                    ...scanData,
-                    busNumber: scannedBusData.busNumber,
-                    synced: false
+                const response = await fetch(`${window.CONFIG.API_URL}/api/scan`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(scanRequest)
                 });
 
-                // Try to sync if online
-                if (navigator.onLine) {
-                    await window.SyncManager.syncNow();
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Error al procesar escaneo');
                 }
 
                 hideLoading();
 
-                // Show success
-                showSuccess(eventType);
+                // Save session token
+                if (data.session_token) {
+                    sessionToken = data.session_token;
+                    await window.DB.setUserData({ session_token: sessionToken });
+                }
 
-                // Hide scan type card
-                document.getElementById('scanTypeCard').classList.add('hidden');
-                scannedBusData = null;
+                // Show INSTANT feedback animation
+                window.GamificationUI.showPointsAnimation(
+                    data.points_earned,
+                    data.co2_saved,
+                    data.route_name
+                );
+
+                // Update gamification display
+                window.GamificationUI.updateDisplay({
+                    total_points: data.total_points,
+                    current_streak: data.current_streak,
+                    total_co2_display: data.total_co2_display
+                });
+
+                // Check for new achievements
+                if (data.new_achievements && data.new_achievements.length > 0) {
+                    setTimeout(() => {
+                        data.new_achievements.forEach(achievement => {
+                            window.GamificationUI.showAchievementBadge({
+                                name: achievement,
+                                icon: '🏆'
+                            });
+                        });
+                    }, 2000);
+                }
+
+                // Update progress bar
+                window.GamificationUI.updateProgressBar(data.total_points, 100);
+
+                // Save to history
+                await window.DB.addToHistory({
+                    ...scanRequest,
+                    route_name: data.route_name,
+                    bus_number: data.bus_number,
+                    points_earned: data.points_earned,
+                    localTimestamp: new Date().toISOString(),
+                    synced: true
+                });
 
                 // Reload history
                 await loadScanHistory();
 
+                // Optionally show destination selector (could be removed for ultra-speed)
+                // showDestinationSelector(data.route_id);
+
             } catch (error) {
                 hideLoading();
-                console.error('Scan recording error:', error);
-                alert('Error al registrar escaneo');
+                console.error('Scan processing error:', error);
+
+                // Save offline
+                await window.DB.addScan(scanRequest);
+                alert('Sin conexión. Se guardó para sincronizar después.');
             }
         }
 
-        // Cancel scan
-        function cancelScan() {
-            document.getElementById('scanTypeCard').classList.add('hidden');
-            scannedBusData = null;
-        }
+        // Load student summary
+        async function loadStudentSummary() {
+            if (!sessionToken) return;
 
-        // Show success animation
-        function showSuccess(eventType) {
-            const message = eventType === 'ingress' ? 'Ingreso registrado ✓' : 'Salida registrada ✓';
-            
-            const successEl = document.createElement('div');
-            successEl.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: var(--color-success);
-                color: white;
-                padding: 2rem 3rem;
-                border-radius: var(--radius-xl);
-                font-size: 1.5rem;
-                font-weight: 700;
-                box-shadow: var(--shadow-xl);
-                z-index: 10000;
-            `;
-            successEl.textContent = message;
-            successEl.classList.add('success-animation');
+            try {
+                const response = await fetch(
+                    `${window.CONFIG.API_URL}/api/student/summary?session_token=${sessionToken}`
+                );
 
-            document.body.appendChild(successEl);
-
-            setTimeout(() => {
-                successEl.remove();
-            }, 2000);
+                if (response.ok) {
+                    const data = await response.json();
+                    window.GamificationUI.updateDisplay(data);
+                    window.GamificationUI.updateProgressBar(data.total_points, 100);
+                }
+            } catch (error) {
+                console.error('Failed to load summary:', error);
+            }
         }
 
         // Load scan history
         async function loadScanHistory() {
-            const history = await window.DB.getHistory(10);
+            const history = await window.DB.getHistory(5);
             const listEl = document.getElementById('scanHistory');
 
             if (history.length === 0) {
-                listEl.innerHTML = '<li class="text-center text-muted" style="padding: var(--space-lg);">No hay escaneos recientes</li>';
+                listEl.innerHTML = '<li class="text-center text-muted" style="padding: var(--space-lg);">No hay viajes recientes</li>';
                 return;
             }
 
@@ -491,15 +341,12 @@
                     minute: '2-digit'
                 });
 
-                const iconClass = scan.eventType === 'ingress' ? 'ingress' : 'egress';
-                const iconText = scan.eventType === 'ingress' ? '➡️' : '⬅️';
-
                 return `
                     <li class="scan-item">
-                        <div class="scan-icon ${iconClass}">${iconText}</div>
+                        <div class="scan-icon entry">📍</div>
                         <div class="scan-details">
-                            <div class="scan-route">Bus ${scan.busNumber || scan.busId}</div>
-                            <div class="scan-time">${scan.eventType === 'ingress' ? 'Ingreso' : 'Salida'} - ${time}</div>
+                            <div class="scan-route">${scan.route_name || 'Ruta detectada'}</div>
+                            <div class="scan-time">${time} - ${scan.points_earned || 0} pts</div>
                         </div>
                         <div class="text-muted" style="font-size: 0.75rem;">
                             ${scan.synced ? '✓' : '⏳'}
@@ -509,11 +356,20 @@
             }).join('');
         }
 
-        // Logout
-        async function handleLogout() {
-            await window.DB.clearUserData();
-            currentUser = null;
-            showLogin();
+        // Show destination selector
+        function showDestinationSelector(routeId) {
+            // Load stops for route
+            // For now, skip this for maximum speed
+        }
+
+        // Skip destination
+        function skipDestination() {
+            document.getElementById('destinationCard').classList.add('hidden');
+        }
+
+        // Show profile modal
+        function showProfileModal() {
+            alert('Perfil personalización - próximamente!');
         }
 
         // Loading overlay
@@ -526,11 +382,7 @@
             document.getElementById('loadingOverlay').classList.add('hidden');
         }
 
-        // Listen for sync completion
-        window.addEventListener('scansSynced', async () => {
-            await loadScanHistory();
-        });
-
     </script>
 </body>
+
 </html>
