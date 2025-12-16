@@ -120,38 +120,50 @@ class QRScanner {
     }
 
     /**
-     * Parse UIDE bus QR code
-     * Format: UIDE-BUS:{busId}:{busNumber}
+     * Parse UIDE bus QR code (V2 - Static QR Format)
+     * Format: UIDE-BUS-XX (static QR per bus)
      * @param {string} qrText - QR code text
      * @returns {object|null} Parsed data or null if invalid
      */
     parseQRCode(qrText) {
         try {
-            // Expected format: UIDE-BUS:1:BUS-001
-            const parts = qrText.split(':');
-
-            if (parts[0] !== 'UIDE-BUS') {
-                console.error('[Scanner] Invalid QR prefix:', parts[0]);
+            // Expected format: UIDE-BUS-01, UIDE-BUS-05, etc.
+            if (!qrText.startsWith('UIDE-')) {
+                console.error('[Scanner] Invalid QR prefix');
                 return null;
             }
 
-            const busId = parseInt(parts[1]);
-            const busNumber = parts[2];
-
-            if (isNaN(busId) || !busNumber) {
-                console.error('[Scanner] Invalid QR data');
-                return null;
-            }
+            // Trigger instant feedback
+            this.triggerInstantFeedback();
 
             return {
-                busId: busId,
-                busNumber: busNumber,
+                staticQrId: qrText,
+                scanTime: new Date().toISOString(),
                 rawData: qrText
             };
 
         } catch (error) {
             console.error('[Scanner] QR parse error:', error);
             return null;
+        }
+    }
+
+    /**
+     * Trigger instant haptic/audio feedback
+     */
+    triggerInstantFeedback() {
+        // Vibration pattern: short-long-short
+        if ('vibrate' in navigator) {
+            navigator.vibrate([200, 100, 200]);
+        }
+
+        // Audio feedback (optional - can add sound file)
+        try {
+            const audio = new Audio('/sounds/scan-success.mp3');
+            audio.volume = 0.3;
+            audio.play().catch(() => { }); // Ignore if sound fails
+        } catch (e) {
+            // Audio not critical
         }
     }
 
