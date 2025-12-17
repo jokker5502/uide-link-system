@@ -40,9 +40,19 @@ class RouteResolver:
         Returns:
             route_id if match found, None otherwise
         """
-        # Get day of week (0=Monday, 6=Sunday)
-        day_name = scan_time.strftime('%a')  # Mon, Tue, etc.
+        # =========================================================================
+        # FIX: FORCE ENGLISH DAY NAMES (Ignora el idioma de tu PC)
+        # =========================================================================
+        # 0=Monday, 6=Sunday
+        days_map = {0: 'Mon', 1: 'Tue', 2: 'Wed', 3: 'Thu', 4: 'Fri', 5: 'Sat', 6: 'Sun'}
+        
+        # Usamos .weekday() que retorna numero, y lo convertimos a texto en Ingles
+        day_name = days_map[scan_time.weekday()]
         scan_time_only = scan_time.time()
+        
+        # DEBUG: Imprimir en consola negra para ver qué está pasando
+        print(f"[RouteResolver] Checking Bus {bus_id} for Day: {day_name} at Time: {scan_time_only}")
+        # =========================================================================
         
         # Query schedule assignments for this bus
         statement = select(ScheduleAssignment).where(
@@ -60,6 +70,7 @@ class RouteResolver:
         matches = []
         for assignment in assignments:
             # Check if current day is in the schedule
+            # Ahora day_name siempre será 'Tue', 'Wed', etc., así que coincidirá con la BD
             if day_name not in assignment.days_of_week:
                 continue
             
@@ -81,7 +92,7 @@ class RouteResolver:
             print(f"[RouteResolver] Multiple matches found, using highest priority")
         
         best_match = matches[0]
-        print(f"[RouteResolver] Resolved bus_id={bus_id} to route_id={best_match.route_id}")
+        print(f"[RouteResolver] ✅ SUCCESS: Resolved bus_id={bus_id} to route_id={best_match.route_id}")
         
         return best_match.route_id
     
