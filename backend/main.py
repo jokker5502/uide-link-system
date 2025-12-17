@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from . import crud, models, schemas
-from .database import SessionLocal, engine
+import crud, models, schemas
+from database import SessionLocal, engine
 from fastapi.middleware.cors import CORSMiddleware
 
 models.Base.metadata.create_all(bind=engine)
@@ -49,7 +49,7 @@ def read_scans(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_scans(db, skip=skip, limit=limit)
 
 # Endpoint to seed data for testing
-@app.post("/seed")
+@app.get("/seed")
 def seed_data(db: Session = Depends(get_db)):
     if db.query(models.Route).first():
         return {"message": "Data already seeded"}
