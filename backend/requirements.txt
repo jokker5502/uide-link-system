@@ -4,3 +4,4 @@ sqlalchemy
 pydantic
 python-multipart
 # For datetime handling if needed, usually built-in is fine but pendulum is nice. Sticking to standard for now.
+psycopg2-binary

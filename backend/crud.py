@@ -17,9 +17,8 @@ def create_scan(db: Session, scan: schemas.ScanCreate):
     # 5 minute window for duplicates
     time_threshold = current_time - timedelta(minutes=5)
     
-    print(f"DEBUG: New Scan Time: {current_time}")
-    print(f"DEBUG: Threshold: {time_threshold}")
-    print(f"DEBUG: UID: {scan.anonymous_user_id}, QR: {scan.qr_code_id}")
+    # 5 minute window for duplicates
+    time_threshold = current_time - timedelta(minutes=5)
 
     existing_scan = db.query(models.Scan).filter(
         models.Scan.anonymous_user_id == scan.anonymous_user_id,
@@ -28,7 +27,7 @@ def create_scan(db: Session, scan: schemas.ScanCreate):
     ).first()
     
     if existing_scan:
-        print(f"DEBUG: Found existing scan: ID={existing_scan.id}, Time={existing_scan.timestamp}")
+        pass # Logic handles this below
 
 
     is_valid = True
@@ -37,12 +36,8 @@ def create_scan(db: Session, scan: schemas.ScanCreate):
     if existing_scan:
         is_valid = False
         notes = "Duplicate scan within 5 minutes"
-<<<<<<< HEAD
-=======
-    
     if scan.dropoff_location:
         notes = f"{notes} | Dropoff: {scan.dropoff_location}" if notes else f"Dropoff: {scan.dropoff_location}"
->>>>>>> 5f1505b (feat: Estructura unificada y limpia del sistema UIDE-Link)
 
     db_scan = models.Scan(
         qr_code_id=scan.qr_code_id,

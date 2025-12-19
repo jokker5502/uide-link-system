@@ -14,9 +14,6 @@ const ScanPage = () => {
     const [searchParams] = useSearchParams();
     const qrId = searchParams.get('id');
 
-
-
-
     // ... we need to integrate the QR scanner UI if no ID is present ...
 
     const [status, setStatus] = useState('idle'); // idle, scanning, loading, success, error, offline, selecting_dropoff
