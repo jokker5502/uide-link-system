@@ -1,1 +1,2 @@
-export const API_URL = 'http://192.168.100.34:8000';
+export const API_URL = import.meta.env.VITE_API_URL;
+export const CLIENT_URL = import.meta.env.VITE_CLIENT_URL || window.location.origin;

@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
-import axios from 'axios';
-import { API_URL } from '../config';
+import api from '../api/axios';
+import { CLIENT_URL } from '../config';
 
 const AdminPage = () => {
     const [qrs, setQrs] = useState([]);
     const [loading, setLoading] = useState(true);
-
-
-    const CLIENT_URL = import.meta.env.VITE_CLIENT_URL || window.location.origin;
 
     useEffect(() => {
         fetchQRs();
@@ -16,7 +13,7 @@ const AdminPage = () => {
 
     const fetchQRs = async () => {
         try {
-            const response = await axios.get(`${API_URL}/qr-codes`);
+            const response = await api.get('/qr-codes');
             setQrs(response.data);
             setLoading(false);
         } catch (error) {
@@ -86,7 +83,6 @@ const AdminPage = () => {
 const ScanList = () => {
     const [scans, setScans] = useState([]);
 
-
     useEffect(() => {
         const interval = setInterval(fetchScans, 5000); // Auto-refresh
         fetchScans();
@@ -95,7 +91,7 @@ const ScanList = () => {
 
     const fetchScans = async () => {
         try {
-            const res = await axios.get(`${API_URL}/scans?limit=20`);
+            const res = await api.get('/scans?limit=20');
             setScans(res.data);
         } catch (e) { console.error(e); }
     };
@@ -132,4 +128,3 @@ const ScanList = () => {
 };
 
 export default AdminPage;
-
