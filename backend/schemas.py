@@ -24,6 +24,10 @@ class ScanBase(BaseModel):
 
 class ScanCreate(ScanBase):
     client_timestamp: Optional[datetime] = None
+<<<<<<< HEAD
+=======
+    dropoff_location: Optional[str] = None
+>>>>>>> 5f1505b (feat: Estructura unificada y limpia del sistema UIDE-Link)
 
 class Scan(ScanBase):
     id: int

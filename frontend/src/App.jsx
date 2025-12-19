@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+<<<<<<< HEAD
 import ScanPage from './pages/ScanPage';
 import AdminPage from './pages/AdminPage';
 import { syncOfflineScans, getOfflineQueueSize } from './services/scanService';
@@ -80,6 +81,22 @@ function App() {
             <a href="/scan?id=QR-TUMBACO-1000">🚌 Simular Viaje (Tumbaco)</a>
           </nav>
         </div>} />
+=======
+import HomePage from './pages/HomePage';
+import ScanPage from './pages/ScanPage';
+import AdminPage from './pages/AdminPage';
+import SchedulePage from './pages/SchedulePage';
+import './index.css';
+
+function App() {
+  return (
+    <div className="app-container" style={{ width: '100%', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: '2rem' }}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/scan" element={<ScanPage />} />
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/schedules" element={<SchedulePage />} />
+>>>>>>> 5f1505b (feat: Estructura unificada y limpia del sistema UIDE-Link)
       </Routes>
     </div>
   );

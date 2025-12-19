@@ -1,21 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
+<<<<<<< HEAD
 import axios from 'axios';
+<<<<<<< HEAD
+=======
+import { API_URL } from '../config';
+>>>>>>> 5f1505b (feat: Estructura unificada y limpia del sistema UIDE-Link)
+=======
+import api from '../api/axios';
+import { CLIENT_URL } from '../config';
+>>>>>>> a41111d (Todo funciona en produccion)
 
 const AdminPage = () => {
     const [qrs, setQrs] = useState([]);
     const [loading, setLoading] = useState(true);
 
+<<<<<<< HEAD
+<<<<<<< HEAD
     const API_URL = `http://${window.location.hostname}:8000`;
     const CLIENT_URL = window.location.origin; // e.g., http://localhost:5173
+=======
 
+    const CLIENT_URL = import.meta.env.VITE_CLIENT_URL || window.location.origin;
+>>>>>>> 5f1505b (feat: Estructura unificada y limpia del sistema UIDE-Link)
+
+=======
+>>>>>>> a41111d (Todo funciona en produccion)
     useEffect(() => {
         fetchQRs();
     }, []);
 
     const fetchQRs = async () => {
         try {
-            const response = await axios.get(`${API_URL}/qr-codes`);
+            const response = await api.get('/qr-codes');
             setQrs(response.data);
             setLoading(false);
         } catch (error) {
@@ -84,8 +101,15 @@ const AdminPage = () => {
 
 const ScanList = () => {
     const [scans, setScans] = useState([]);
+<<<<<<< HEAD
     const API_URL = `http://${window.location.hostname}:8000`;
+=======
 
+<<<<<<< HEAD
+>>>>>>> 5f1505b (feat: Estructura unificada y limpia del sistema UIDE-Link)
+
+=======
+>>>>>>> a41111d (Todo funciona en produccion)
     useEffect(() => {
         const interval = setInterval(fetchScans, 5000); // Auto-refresh
         fetchScans();
@@ -94,7 +118,7 @@ const ScanList = () => {
 
     const fetchScans = async () => {
         try {
-            const res = await axios.get(`${API_URL}/scans?limit=20`);
+            const res = await api.get('/scans?limit=20');
             setScans(res.data);
         } catch (e) { console.error(e); }
     };
@@ -131,3 +155,10 @@ const ScanList = () => {
 };
 
 export default AdminPage;
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5f1505b (feat: Estructura unificada y limpia del sistema UIDE-Link)
+=======
+>>>>>>> a41111d (Todo funciona en produccion)

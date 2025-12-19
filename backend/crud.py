@@ -37,6 +37,12 @@ def create_scan(db: Session, scan: schemas.ScanCreate):
     if existing_scan:
         is_valid = False
         notes = "Duplicate scan within 5 minutes"
+<<<<<<< HEAD
+=======
+    
+    if scan.dropoff_location:
+        notes = f"{notes} | Dropoff: {scan.dropoff_location}" if notes else f"Dropoff: {scan.dropoff_location}"
+>>>>>>> 5f1505b (feat: Estructura unificada y limpia del sistema UIDE-Link)
 
     db_scan = models.Scan(
         qr_code_id=scan.qr_code_id,
