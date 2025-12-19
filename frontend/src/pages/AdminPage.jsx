@@ -3,6 +3,9 @@ import QRCode from 'react-qr-code';
 import api from '../api/axios';
 import { CLIENT_URL } from '../config';
 
+// Fallback API URL – ensures the admin page never points to localhost if env var is missing
+const API_URL = import.meta.env.VITE_API_URL || "https://54.196.132.183.nip.io";
+
 const AdminPage = () => {
     const [qrs, setQrs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -13,7 +16,8 @@ const AdminPage = () => {
 
     const fetchQRs = async () => {
         try {
-            const response = await api.get('/qr-codes');
+            // Utilizamos la constante API_URL como base en caso de que la instancia de axios no tenga la URL correcta
+            const response = await api.get('/qr-codes', { baseURL: API_URL });
             setQrs(response.data);
             setLoading(false);
         } catch (error) {
@@ -22,59 +26,49 @@ const AdminPage = () => {
         }
     };
 
-    if (loading) return <div className="card">Cargando datos...</div>;
+    if (loading) return <div className="card text-center">Cargando datos...</div>;
 
     return (
-        <div className="card" style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <h2>Panel de Administración - Códigos QR</h2>
-            <p className="description">
-                Estos son los códigos generados para las rutas.
-                Los administradores pueden imprimir esta pantalla y pegar los códigos en los buses.
-            </p>
+        <div className="animate-fade-in w-full" style={{ maxWidth: '800px' }}>
+            <div className="text-center mb-4">
+                <h2>Panel de Administración</h2>
+                <p>Gestión de Códigos QR y Viajes</p>
+            </div>
 
-            <div style={{ display: 'grid', gap: '2rem', width: '100%' }}>
+            <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
                 {qrs.map((qr) => {
-                    // Construction of the URL represented by the QR
                     const scanLink = `${CLIENT_URL}/scan?id=${qr.id}`;
-
                     return (
-                        <div key={qr.id} style={{
-                            border: '1px solid #555',
-                            padding: '1rem',
-                            borderRadius: '8px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            backgroundColor: '#2a2a2a'
-                        }}>
-                            <h3 style={{ margin: '0 0 10px 0' }}>{qr.schedule?.route?.name || 'Ruta desconocida'}</h3>
-                            <p style={{ color: '#aaa', margin: '0 0 15px 0' }}>
+                        <div key={qr.id} className="card text-center" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <h3 style={{ marginBottom: '0.5rem' }}>{qr.schedule?.route?.name || 'Ruta desconocida'}</h3>
+                            <p style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>
                                 🕒 {qr.schedule?.departure_time} | 📅 {qr.schedule?.day_of_week}
                             </p>
 
-                            <div style={{ background: 'white', padding: '16px', borderRadius: '8px' }}>
-                                <QRCode value={scanLink} size={150} />
+                            <div style={{ background: 'white', padding: '1rem', borderRadius: '12px' }}>
+                                <QRCode value={scanLink} size={140} />
                             </div>
 
-                            <p style={{ marginTop: '15px', wordBreak: 'break-all', fontSize: '0.8em', fontFamily: 'monospace' }}>
-                                <a href={scanLink} target="_blank" rel="noreferrer" style={{ color: '#646cff' }}>
-                                    {scanLink}
+                            <div style={{ marginTop: '1rem', width: '100%' }}>
+                                <a href={scanLink} target="_blank" rel="noreferrer" className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '0.5rem' }}>
+                                    Abrir Link
                                 </a>
-                            </p>
-
-                            <div style={{ fontSize: '0.8em', color: '#666' }}>ID Interno: {qr.id}</div>
+                            </div>
+                            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>ID: {qr.id}</div>
                         </div>
                     );
                 })}
 
                 {qrs.length === 0 && (
-                    <p>No hay rutas cargadas. Ejecuta /seed en la API primero.</p>
+                    <div className="card text-center">
+                        <p>No hay rutas cargadas. Ejecuta /seed en la API.</p>
+                    </div>
                 )}
             </div>
 
-            <hr style={{ margin: '3rem 0', borderColor: '#444' }} />
+            <hr style={{ margin: '3rem 0', borderColor: 'rgba(255,255,255,0.1)' }} />
 
-            <h2>📊 Últimos Viajes Registrados</h2>
+            <h2 className="mb-4">📊 Últimos Viajes</h2>
             <ScanList />
         </div>
     );
@@ -84,7 +78,7 @@ const ScanList = () => {
     const [scans, setScans] = useState([]);
 
     useEffect(() => {
-        const interval = setInterval(fetchScans, 5000); // Auto-refresh
+        const interval = setInterval(fetchScans, 5000);
         fetchScans();
         return () => clearInterval(interval);
     }, []);
@@ -97,32 +91,35 @@ const ScanList = () => {
     };
 
     return (
-        <div style={{ overflowX: 'auto' }}>
+        <div className="card" style={{ overflowX: 'auto', padding: '0' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
-                <thead>
-                    <tr style={{ borderBottom: '1px solid #555' }}>
-                        <th style={{ padding: '10px' }}>ID</th>
-                        <th style={{ padding: '10px' }}>Hora (UTC)</th>
-                        <th style={{ padding: '10px' }}>QR</th>
-                        <th style={{ padding: '10px' }}>Usuario (Anon)</th>
-                        <th style={{ padding: '10px' }}>Estado</th>
+                <thead style={{ background: 'rgba(255,255,255,0.05)' }}>
+                    <tr>
+                        <th style={{ padding: '1rem' }}>Hora</th>
+                        <th style={{ padding: '1rem' }}>Ruta</th>
+                        <th style={{ padding: '1rem' }}>Usuario</th>
+                        <th style={{ padding: '1rem' }}>Estado</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {scans.map(s => (
-                        <tr key={s.id} style={{ borderBottom: '1px solid #333', backgroundColor: s.is_valid ? 'transparent' : 'rgba(255,0,0,0.1)' }}>
-                            <td style={{ padding: '10px' }}>{s.id}</td>
-                            <td style={{ padding: '10px' }}>{new Date(s.timestamp).toLocaleTimeString()}</td>
-                            <td style={{ padding: '10px' }}>{s.qr_code_id}</td>
-                            <td style={{ padding: '10px' }} title={s.anonymous_user_id}>{s.anonymous_user_id.substring(0, 8)}...</td>
-                            <td style={{ padding: '10px' }}>
-                                {s.is_valid ? <span style={{ color: '#66bb6a' }}>✅ OK</span> : <span style={{ color: '#ef5350' }}>❌ {s.validation_notes}</span>}
+                    {scans.map((s, i) => (
+                        <tr key={s.id} style={{
+                            borderBottom: '1px solid rgba(255,255,255,0.05)',
+                            background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)'
+                        }}>
+                            <td style={{ padding: '1rem' }}>{new Date(s.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                            <td style={{ padding: '1rem' }}>{s.qr_code_id.split('-')[1] || s.qr_code_id}</td>
+                            <td style={{ padding: '1rem' }} title={s.anonymous_user_id}>{s.anonymous_user_id.substring(0, 6)}...</td>
+                            <td style={{ padding: '1rem' }}>
+                                {s.is_valid ?
+                                    <span style={{ color: 'var(--success-color)', fontWeight: 'bold' }}>✅ OK</span> :
+                                    <span style={{ color: 'var(--error-color)', fontWeight: 'bold' }}>❌ {s.validation_notes}</span>}
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-            {scans.length === 0 && <p style={{ textAlign: 'center', color: '#666' }}>Esperando datos...</p>}
+            {scans.length === 0 && <p style={{ padding: '2rem', textAlign: 'center' }}>Esperando datos...</p>}
         </div>
     );
 };

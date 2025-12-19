@@ -1,42 +1,209 @@
+/* ---------------------------------------------------------------
+   UIDE LINK – DARK MODE PREMIUM (Mobile‑First)
+   --------------------------------------------------------------- */
+
+:root {
+  /* Core palette */
+  --bg-dark: #121212;
+  /* App background */
+  --bg-card: #1E1E1E;
+  /* Card / button background */
+  --bg-elevated: #252525;
+  /* Slightly lighter for elevated elements */
+  --uide-red: #D32F2F;
+  /* Primary accent */
+  --uide-red-dark: #B71C1C;
+  /* Darker shade for gradients */
+  --text-primary: #FFFFFF;
+  /* Main text */
+  --text-secondary: #E0E0E0;
+  /* Secondary / muted text */
+  --success: #4CAF50;
+  --warning: #FF9800;
+  --error: #F44336;
+
+  /* Typography */
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+
+  /* Radii & shadows */
+  --radius-lg: 16px;
+  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --transition: 0.3s ease;
+}
+
+/* ---------------------------------------------------------------
+   Base styles
+   --------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
 #root {
-  max-width: 1280px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 1.8rem;
+  background: linear-gradient(135deg, var(--text-primary), var(--uide-red));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------
+   Layout utilities (mobile‑first)
+   --------------------------------------------------------------- */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 2rem 0;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.mt-4 {
+  margin-top: 2rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
+/* ---------------------------------------------------------------
+   Card component (glass‑like)
+   --------------------------------------------------------------- */
 .card {
-  padding: 2em;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
+  max-width: 340px;
 }
 
-.read-the-docs {
-  color: #888;
+/* ---------------------------------------------------------------
+   Buttons – primary (large) & outline (secondary)
+   --------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  width: 100%;
+  border-radius: var(--radius-lg);
+}
+
+/* Primary – gradient, full‑width, hero action */
+.btn-primary {
+  background: linear-gradient(135deg, var(--uide-red), var(--uide-red-dark));
+  color: var(--text-primary);
+  padding: 1.25rem 1.5rem;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(211, 47, 47, 0.4);
+}
+
+/* Secondary – outline style */
+.btn-outline {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 2px solid var(--text-secondary);
+  padding: 0.9rem 1.2rem;
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+/* Ghost – tiny link (admin) */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  padding: 0.5rem;
+}
+
+.btn-ghost:hover {
+  color: var(--uide-red);
+}
+
+/* Icon sizes */
+.icon-large {
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.icon-medium {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+/* ---------------------------------------------------------------
+   Responsive tweaks (tablet & up)
+   --------------------------------------------------------------- */
+@media (min-width: 480px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  .btn-primary {
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 3rem 0;
+  }
+
+  .card {
+    max-width: 380px;
+  }
 }
