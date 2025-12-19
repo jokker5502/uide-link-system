@@ -1,10 +1,6 @@
 import axios from 'axios';
 
-<<<<<<< HEAD
-const API_URL = `http://${window.location.hostname}:8000`;
-=======
 import { API_URL } from '../config';
->>>>>>> 5f1505b (feat: Estructura unificada y limpia del sistema UIDE-Link)
 
 export const getOrCreateAnonymousId = () => {
     let id = localStorage.getItem('anonymous_user_id');

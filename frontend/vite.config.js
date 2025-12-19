@@ -10,19 +10,12 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-<<<<<<< HEAD
-        name: 'Transporte UIDE',
-        short_name: 'Bus UIDE',
-        description: 'Registro de uso de transporte universitario',
-        theme_color: '#242424',
-=======
         name: 'UIDE Link',
         short_name: 'UIDE Link',
         description: 'Sistema de Transporte UIDE',
         theme_color: '#D32F2F',
         background_color: '#ffffff',
         display: 'standalone',
->>>>>>> 5f1505b (feat: Estructura unificada y limpia del sistema UIDE-Link)
         icons: [
           {
             src: 'pwa-192x192.png',
@@ -36,10 +29,6 @@ export default defineConfig({
           }
         ]
       },
-<<<<<<< HEAD
-      devOptions: {
-        enabled: true // Important to test in dev mode
-=======
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         runtimeCaching: [
@@ -59,7 +48,6 @@ export default defineConfig({
       },
       devOptions: {
         enabled: true
->>>>>>> 5f1505b (feat: Estructura unificada y limpia del sistema UIDE-Link)
       }
     })
   ],
