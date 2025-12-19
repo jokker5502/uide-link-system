@@ -11,7 +11,13 @@ app = FastAPI(title="UIDE Bus Tracking System")
 # CORS setup for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # For dev only
+    allow_origins=[
+        "http://localhost:5173", # Local frontend
+        "http://localhost:3000", # Alternative local
+        "https://bddlink.xyz",   # Production frontend
+        "https://www.bddlink.xyz",
+        "*"                      # Keep wildcard for flexibility if needed, though specific is better with credentials
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
